@@ -61,17 +61,19 @@ func (heap *Heap[K, V]) valueAt(index int) (*Value[K, V], error) {
 func (heap *Heap[K, V]) Push(v Value[K, V]) {
 	heap.backend = append(heap.backend, v)
 	index := len(heap.backend) - 1
-	bubbleUp := false
-	for index > 0 || !bubbleUp {
+	bubbleUp := true
+	for index > 0 && bubbleUp {
 		parentIndex := heap.parent(index)
 		pv := heap.backend[parentIndex]
 		if heap.minHeap {
-			if v.Priority < pv.Priority {
-				bubbleUp = true
+			if v.Priority >= pv.Priority {
+				bubbleUp = false
+				continue
 			}
 		} else {
-			if v.Priority > pv.Priority {
-				bubbleUp = true
+			if v.Priority <= pv.Priority {
+				bubbleUp = false
+				continue
 			}
 		}
 		heap.backend[parentIndex], heap.backend[index] = heap.backend[index], heap.backend[parentIndex]
@@ -88,15 +90,15 @@ func (heap *Heap[K, V]) lesserChildIndex(index int) (int, error) {
 		if heap.backend[lIndex].Priority < heap.backend[rIndex].Priority {
 			minIndex = lIndex
 		}
-		if value.Priority < heap.backend[minIndex].Priority {
+		if value.Priority > heap.backend[minIndex].Priority {
 			return minIndex, nil
 		}
 	} else if errL == nil && errR != nil {
-		if value.Priority < heap.backend[lIndex].Priority {
+		if value.Priority > heap.backend[lIndex].Priority {
 			return lIndex, nil
 		}
 	} else if errL != nil && errR == nil {
-		if value.Priority < heap.backend[rIndex].Priority {
+		if value.Priority > heap.backend[rIndex].Priority {
 			return rIndex, nil
 		}
 	}
@@ -112,15 +114,15 @@ func (heap *Heap[K, V]) greaterChildIndex(index int) (int, error) {
 		if heap.backend[lIndex].Priority > heap.backend[rIndex].Priority {
 			maxIndex = lIndex
 		}
-		if value.Priority > heap.backend[maxIndex].Priority {
+		if value.Priority < heap.backend[maxIndex].Priority {
 			return maxIndex, nil
 		}
 	} else if errL == nil && errR != nil {
-		if value.Priority > heap.backend[lIndex].Priority {
+		if value.Priority < heap.backend[lIndex].Priority {
 			return lIndex, nil
 		}
 	} else if errL != nil && errR == nil {
-		if value.Priority > heap.backend[rIndex].Priority {
+		if value.Priority < heap.backend[rIndex].Priority {
 			return rIndex, nil
 		}
 	}
