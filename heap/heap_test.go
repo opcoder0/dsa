@@ -17,12 +17,14 @@ func TestPushPop(t *testing.T) {
 	h.Push(*v30)
 	v50 := NewValue[int, nothing](50, nil)
 	h.Push(*v50)
+	v200 := NewValue[int, nothing](200, nil)
+	h.Push(*v200)
 
 	v, err := h.Pop()
 	assert.Nil(t, err)
-	assert.Equal(t, v.Priority, 100)
+	assert.Equal(t, v.Priority, 200)
 
 	v, err = h.Pop()
 	assert.Nil(t, err)
-	assert.Equal(t, v.Priority, 50)
+	assert.Equal(t, v.Priority, 100)
 }
